@@ -7,6 +7,9 @@ services:
     hostname: atmoz-sftp
     volumes:
       - ./upload:/home/foo/upload
+      - ./upload:/home/foo/share
+      - ./id_rsa.pub:/home/foo/.ssh/keys/id_rsa.pub:ro
+      - ./host_id_rsa:/etc/ssh/ssh_host_rsa_key
     ports:
       - "2222:22"
-    command: foo:pass:::upload
+    command: foo::1001
