@@ -1,23 +1,51 @@
 plugins {
-    id 'java'
+    id "application"
+    id "com.github.johnrengelman.shadow" version "$shadowPluginVersion"
 }
 
-group 'org.example'
-version '1.0'
+version "0.1"
+group "org.example.uploader"
 
 repositories {
     mavenCentral()
 }
 
+mainClassName = "org.example.uploader.Application"
+
 dependencies {
+    // Micronaut
+    annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    annotationProcessor("io.micronaut:micronaut-inject-java")
+    annotationProcessor("io.micronaut:micronaut-validation")
+    implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    implementation("io.micronaut:micronaut-inject")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("io.micronaut:micronaut-http-server-netty")
+
     // JSch
     implementation "com.jcraft:jsch:$jschVersion"
 
     // test
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testAnnotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    testAnnotationProcessor("io.micronaut:micronaut-inject-java")
+    testImplementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 test {
     useJUnitPlatform()
 }
+
+java {
+    sourceCompatibility = JavaVersion.toVersion('11')
+    targetCompatibility = JavaVersion.toVersion('11')
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.uploader;
 
 import com.jcraft.jsch.*;
 import org.junit.jupiter.api.Test;
