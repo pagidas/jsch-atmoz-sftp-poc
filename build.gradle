@@ -13,11 +13,14 @@ repositories {
 mainClassName = "org.example.uploader.Application"
 
 dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+
     // Micronaut
     annotationProcessor(platform("io.micronaut:micronaut-bom:$micronautVersion"))
     annotationProcessor("io.micronaut:micronaut-inject-java")
     annotationProcessor("io.micronaut:micronaut-validation")
     implementation(platform("io.micronaut:micronaut-bom:$micronautVersion"))
+    implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut:micronaut-inject")
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-runtime")
@@ -25,6 +28,12 @@ dependencies {
 
     // JSch
     implementation "com.jcraft:jsch:$jschVersion"
+
+    // Commons IO
+    implementation "commons-io:commons-io:$commonsIoVersion"
+
+    // Logging
+    runtimeOnly "ch.qos.logback:logback-classic:${logBackClassicVersion}"
 
     // test
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
