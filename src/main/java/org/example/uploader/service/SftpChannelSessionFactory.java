@@ -48,6 +48,8 @@ public class SftpChannelSessionFactory {
                     sftpConfig.getClient().getUser(),
                     sftpConfig.getServer().getHost(),
                     sftpConfig.getServer().getPort());
+            // it won't complain because we use public-private-key authentication
+            jschSession.setPassword("no-password-at-the-moment");
             jschSession.connect();
 
             log.info("Session connected {}", jschSession.isConnected());
