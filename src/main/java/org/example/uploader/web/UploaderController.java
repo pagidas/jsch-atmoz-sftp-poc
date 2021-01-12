@@ -1,6 +1,5 @@
 package org.example.uploader.web;
 
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -29,7 +28,7 @@ public class UploaderController {
 
         try {
             uploaderService.uploadContent(content);
-        } catch (SftpException | IOException | JSchException e) {
+        } catch (SftpException | IOException e) {
             return HttpResponse
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Something happened! -- " + e.getMessage());

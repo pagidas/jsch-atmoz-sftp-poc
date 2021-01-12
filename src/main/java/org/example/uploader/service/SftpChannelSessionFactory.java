@@ -50,10 +50,15 @@ public class SftpChannelSessionFactory {
                     sftpConfig.getServer().getPort());
             // it won't complain because we use public-private-key authentication
             jschSession.setPassword("no-password-at-the-moment");
-            jschSession.connect();
 
+            jschSession.connect();
             log.info("Session connected {}", jschSession.isConnected());
-            return (ChannelSftp) jschSession.openChannel("sftp");
+
+            var sftpChannel = (ChannelSftp) jschSession.openChannel("sftp");
+            sftpChannel.connect();
+            log.info("SFT channel created {}", sftpChannel.isConnected());
+
+            return sftpChannel;
         } catch (JSchException e) {
             log.error("Jsch failed with message: {}", e.getMessage());
         }

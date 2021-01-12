@@ -1,7 +1,6 @@
 package org.example.uploader.service;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import org.apache.commons.io.FileUtils;
 
@@ -20,11 +19,10 @@ public class UploaderService {
         this.channelSftp = channelSftp;
     }
 
-    public void uploadContent(String content) throws SftpException, IOException, JSchException {
+    public void uploadContent(String content) throws IOException, SftpException {
         var fileToUpload = new File("fileToUpload");
         FileUtils.writeStringToFile(fileToUpload, content, StandardCharsets.UTF_8);
 
-        channelSftp.connect();
         channelSftp.put("fileToUpload", String.format("upload/uploadedFile_%s.txt", LocalDateTime.now()));
         channelSftp.exit();
 
