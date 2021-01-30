@@ -5,17 +5,16 @@ import com.jcraft.jsch.HostKey;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import io.micronaut.context.annotation.Factory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+@Slf4j
 @Factory
 public class SftpChannelSessionFactory {
 
-    private final Logger log = LoggerFactory.getLogger(SftpChannelSessionFactory.class);
     private final SftpConfiguration sftpConfig;
 
     public SftpChannelSessionFactory(SftpConfiguration sftpConfig) {

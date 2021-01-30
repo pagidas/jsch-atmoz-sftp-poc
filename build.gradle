@@ -13,6 +13,12 @@ repositories {
 mainClassName = "org.example.uploader.Application"
 
 dependencies {
+    // Lombok
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+
     implementation 'org.jetbrains:annotations:20.1.0'
 
     // Micronaut
@@ -28,9 +34,6 @@ dependencies {
 
     // JSch
     implementation "com.jcraft:jsch:$jschVersion"
-
-    // Commons IO
-    implementation "commons-io:commons-io:$commonsIoVersion"
 
     // Logging
     runtimeOnly "ch.qos.logback:logback-classic:${logBackClassicVersion}"
