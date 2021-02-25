@@ -1,4 +1,4 @@
-package org.example.uploader.service;
+package org.example.uploader.service.sftp;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.HostKey;
@@ -23,6 +23,8 @@ public class SftpChannelSessionFactory {
 
     @Singleton
     public ChannelSftp jschSftpSession() {
+        JSch.setLogger(new JschLogger(log));
+
         var decodedKey = Base64.getDecoder().decode(sftpConfig.getServer().getPublicKey());
 
         var jsch = new JSch();

@@ -3,10 +3,10 @@ package org.example.uploader.service;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import io.micronaut.context.annotation.Value;
+import lombok.SneakyThrows;
 
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
@@ -21,7 +21,8 @@ public class UploaderService {
         this.uploadFolder = uploadFolder;
     }
 
-    public void uploadContent(String content) throws IOException, SftpException {
+    @SneakyThrows(SftpException.class)
+    public void uploadContent(String content) {
         var inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         channelSftp.put(inputStream, String.format("%s/uploadedFile_%s.txt", uploadFolder, LocalDateTime.now()));
         channelSftp.exit();

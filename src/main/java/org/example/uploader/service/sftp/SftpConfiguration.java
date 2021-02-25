@@ -1,4 +1,4 @@
-package org.example.uploader.service;
+package org.example.uploader.service.sftp;
 
 import io.micronaut.context.annotation.ConfigurationProperties;
 import lombok.Data;

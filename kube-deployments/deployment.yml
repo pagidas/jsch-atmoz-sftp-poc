@@ -1,0 +1,116 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: atmoz-sftp
+  namespace: default
+  labels:
+    environment: dev
+    app: atmoz-sftp
+spec:
+  selector:
+    matchLabels:
+      app: atmoz-sftp
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        environment: dev
+        app: atmoz-sftp
+    spec:
+      volumes:
+        - name: sftp-host-keys
+          secret:
+            secretName: sftp-host-keys
+            defaultMode: 0600
+      containers:
+        - name: atmoz-sftp
+          image: atmoz/sftp:latest
+          imagePullPolicy: Always
+          args: ["foo:1001:::upload"] #create users and dirs
+          ports:
+            - containerPort: 22
+          volumeMounts:
+            - mountPath: /home/foo/.ssh/keys/id_rsa.pub
+              name: sftp-host-keys
+              subPath: ssh_client_rsa.pub
+              readOnly: true
+            - mountPath: /etc/ssh/ssh_host_rsa.pub
+              name: sftp-host-keys
+              subPath: ssh_host_rsa.pub
+              readOnly: false
+            - mountPath: /etc/ssh/ssh_host_rsa_key
+              name: sftp-host-keys
+              subPath: ssh_host_rsa_key
+              readOnly: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atmoz-sftp
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: atmoz-sftp
+  ports:
+    - port: 22
+      targetPort: 22
+      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+      nodePort: 30000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sftp-host-keys
+  namespace: default
+stringData:
+  client_public_key: |
+    AAAAB3NzaC1yc2EAAAADAQABAAABgQCtdSAyAqdUu9WvJE+GeiNVaBAIPX5fLmaL5kHRTWeioQMovW27N4jMuz9xoGj6vxMyw5XUAeRgQwHRnyjVjXkT3Fjq4zfRzwLXBfD10mQUPijf3APQwVvkndqLwuKSYM0BUv7tdOSOGBHXmIr6LYzQ93hS2uctzYhvt8GZSvxa0CeY9FHTVyrcbrHLfJQnAXL3UeOYFQ+wL2nwrAVinkXrfWBGtsKbSYSiND7PGljw/ZPh8o1SMEEy8kbIY88VeTIvQajF8LaGoYLRGxpCqDUv4BGK8ofXzvGgt+6FnH6m2cRFuQzwqHocstEZo1badf9QWw/UU71SC6xsUxAdnrQcPsIyetvKkWXqy+eEl0NBgYzozZS5F4QcY6e6zfNrl58mYDMnm0YmMcr62QFx3di3RAjlw9pSAVo2IhBs5RpRQTya6xPdjYntL2Zpm2JqRTFlGswvoEmBqo7nCN1P9aIDp0uXRTOfeb3v6au+ip8gG3LDDyVC3AQ2hTG7IhhcIqs=
+  server_public_key: |
+    AAAAB3NzaC1yc2EAAAADAQABAAABgQC5pygNTxmJ6WtA0Xbw/PBJ6nYteD2BLzwQZIXD11KkBzjIrFj4DIVgGM5EhnSKsVMhrXrx9vL8iHBP20+EE/TLx7NeBJRh3mIUoABx9mzqkwleB2nReji7vDCGqUvmkM+evqCqktCpXuchztNkl0Sb/33RdhMezUwgcNBVUAnlMDurAJC/xUdhECY5nmhQTnzqbaDSr0Sr14aLW+jFxRi6vD45Mkxo044FKflAyoiMJv6fi3U8FDhZJl3OQsA8kf+pFDEMrmFW9+uOxvqh1FlQr2J0ObYIF9mFkfeMrw/8Ht6OpClSifmKdla4gYzwOLmPoDU7UfRS17MtQJ60Fk6kOYWFTe+F5rARc9HOTATDXpUC965wcuYZkptrLMuoSvIvsSSb6ZK7qJNr0+feaJna6VbacZZiO468GFT/Wy0qN7cbHH2uXr4djfh5mvu9n0fjQu829FvFovk7kTM9v5w1QQLEue7QGgJl7USl+bJ4Nlh3y+dQLsW+zSfOcx1xRsc=
+  ssh_client_rsa.pub: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtdSAyAqdUu9WvJE+GeiNVaBAIPX5fLmaL5kHRTWeioQMovW27N4jMuz9xoGj6vxMyw5XUAeRgQwHRnyjVjXkT3Fjq4zfRzwLXBfD10mQUPijf3APQwVvkndqLwuKSYM0BUv7tdOSOGBHXmIr6LYzQ93hS2uctzYhvt8GZSvxa0CeY9FHTVyrcbrHLfJQnAXL3UeOYFQ+wL2nwrAVinkXrfWBGtsKbSYSiND7PGljw/ZPh8o1SMEEy8kbIY88VeTIvQajF8LaGoYLRGxpCqDUv4BGK8ofXzvGgt+6FnH6m2cRFuQzwqHocstEZo1badf9QWw/UU71SC6xsUxAdnrQcPsIyetvKkWXqy+eEl0NBgYzozZS5F4QcY6e6zfNrl58mYDMnm0YmMcr62QFx3di3RAjlw9pSAVo2IhBs5RpRQTya6xPdjYntL2Zpm2JqRTFlGswvoEmBqo7nCN1P9aIDp0uXRTOfeb3v6au+ip8gG3LDDyVC3AQ2hTG7IhhcIqs=
+  ssh_host_rsa.pub: |
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC5pygNTxmJ6WtA0Xbw/PBJ6nYteD2BLzwQZIXD11KkBzjIrFj4DIVgGM5EhnSKsVMhrXrx9vL8iHBP20+EE/TLx7NeBJRh3mIUoABx9mzqkwleB2nReji7vDCGqUvmkM+evqCqktCpXuchztNkl0Sb/33RdhMezUwgcNBVUAnlMDurAJC/xUdhECY5nmhQTnzqbaDSr0Sr14aLW+jFxRi6vD45Mkxo044FKflAyoiMJv6fi3U8FDhZJl3OQsA8kf+pFDEMrmFW9+uOxvqh1FlQr2J0ObYIF9mFkfeMrw/8Ht6OpClSifmKdla4gYzwOLmPoDU7UfRS17MtQJ60Fk6kOYWFTe+F5rARc9HOTATDXpUC965wcuYZkptrLMuoSvIvsSSb6ZK7qJNr0+feaJna6VbacZZiO468GFT/Wy0qN7cbHH2uXr4djfh5mvu9n0fjQu829FvFovk7kTM9v5w1QQLEue7QGgJl7USl+bJ4Nlh3y+dQLsW+zSfOcx1xRsc=
+  ssh_host_rsa_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIG5AIBAAKCAYEAuacoDU8ZielrQNF28PzwSep2LXg9gS88EGSFw9dSpAc4yKxY
+    +AyFYBjORIZ0irFTIa168fby/IhwT9tPhBP0y8ezXgSUYd5iFKAAcfZs6pMJXgdp
+    0Xo4u7wwhqlL5pDPnr6gqpLQqV7nIc7TZJdEm/990XYTHs1MIHDQVVAJ5TA7qwCQ
+    v8VHYRAmOZ5oUE586m2g0q9Eq9eGi1voxcUYurw+OTJMaNOOBSn5QMqIjCb+n4t1
+    PBQ4WSZdzkLAPJH/qRQxDK5hVvfrjsb6odRZUK9idDm2CBfZhZH3jK8P/B7ejqQp
+    Uon5inZWuIGM8Di5j6A1O1H0UtezLUCetBZOpDmFhU3vheawEXPRzkwEw16VAveu
+    cHLmGZKbayzLqEryL7Ekm+mSu6iTa9Pn3miZ2ulW2nGWYjuOvBhU/1stKje3Gxx9
+    rl6+HY34eZr7vZ9H40LvNvRbxaL5O5EzPb+cNUECxLnu0BoCZe1EpfmyeDZYd8vn
+    UC7Fvs0nznMdcUbHAgMBAAECggGAaGWj8x/414GHy1I+lTNXF+mdfOIxi9R47Srp
+    wX/yu8RH3Sh1ez7nPWuVihklrdwbSEPab/gTGYjLx0wnAbmLHZB1v7fJjONVug1j
+    UrJk+t+mE9cNXTtibcdcbk0DHmtuJPFDPcgDSErSpEM+wkEB1sssAD5qcBa36UIn
+    FOJGPjgKRZWyz/PquJ0xMZNvS0Fnoxf0qKTgc9VlljYfxh6YUmGKh/VN3GCiayr4
+    O8PoVw+SfTsZuKgSK6eUdmk42pap+8fG2pLLWSwsFJsrqhIinuRvqF0uHw3CINjk
+    Jagnj3bZOEWRZDfRDQrwwEmIMsh4yG+bYRqpuEjkVHIUyPPwoXBA2Vhgh/LLC3DI
+    O3ead14I5LlwfpcOhv8S9azcx5h69myC7wABZ21KkR2yLpIizWZf4gqPjus/eaUl
+    zpiWHGe2zneweiMRD7DMdEKeCMqV08S1eVgrfOjF5VGEDRnDToG96eZ7wXCv2whX
+    MreI0PYw8yOnbRaYe3QJLh2o6+cpAoHBAPNsBK+zqoBajx7jMZrrEOBU1ByYJdYV
+    PeiySlMKk9Sg8enl06+fPi+b9Tbnk7mvZDRLNxsj5VZrbOfu7UJRNuXqugouznpS
+    rNdhgO/0fT43rIzEC6kPwWbLPGwrNPjGdHvbxf16JSqN0B71JIFjg8ZfK1DBbtPw
+    BepOqz+O1b7kCwuiroiCLQJvoWChFRklNdjVVSVVGVvhOYSqSCQpEtwaBu+Rje1n
+    948cQae/ZqN2psRVuEhy18t48JZ7zPK3ywKBwQDDPviIZcR9DLR+Hxe+Rd5IMg3T
+    gKW1A/C5aO7UyneO7fzgb7dXNJQSxOPJXvPXV/s/R31sMgMoDoUgobcls1OSNIVo
+    Qp6kmAOLdUkCobRqaU7ZHifcKtyig0gYXoJO7KZxyF7EpgLLvDpP52qbGUNnDJpU
+    98hn853Y6uDQ552UQcbC+GqyDWuYr0rNQ/2OY7nmnz81QNYqPG7EHIdtUpjEhG6r
+    AqzW2wSN8jUeZh47DNQx9BszHzSFE8LyXroa9XUCgcEAv1cqO95TaL9GfvYBWQ/r
+    XRrw/GUQYL6jwlTbHXlUCLBWWBADHKpk3FGQKA9STIQ0lPKGp3vI2uxoV8u0jgt+
+    xq2CfVybiwWPvWF0U6nwBMcIiEHWFJdA5AdfQHuaEO8WQwHXGM85hcChVqRFhLtv
+    qq/GQZ06+7dRPwOFktk45OsmT4gZ/02sCZ0r0ePszK42LHJMkqLY4yMf7ktXl6z9
+    mSuQRiI42ON/ceu5JB3MlTNAFVZ4G+LCA7vWCcPYrvWPAoHARQfHkVoBzYCndAwE
+    Nga332irEMNkUwqwmq0p+9wVx1gHV0bIWLHDRJuOOc0zg0idETNyecV47jmsAeyL
+    N24etwuQu1sKggEpB66RALgxdIoFEaiiySnyVhb6b3tCsSrkckg4kWhshqHnMAcO
+    3wVgmlePXUk59t7gSShKEjJBuYBECP0RpCAwkYwwc0B9rlE+EfbtvyNMVSSGuRmp
+    HBLe5mQ4SIgqmdBX3OPsufG68H/Jqlu3Hi0DQaXKAC1TuWJdAoHBANZy+e+p8c14
+    JObN2wr73KURpx4Pq+pORiu1+5NGabZcETaYXSZOIOPcqlMHK93AgLqiXmFn4iqT
+    8BsfKg2xVToDvgObgDHWt+NZzb7g0X+cznv/IRSenple9cjsqfLbAS059HyR2+M6
+    cdjZ4dn5VF1OnUkz5cBU4/NTxJSpqVtALSy5h6Fsy8qK6w3sH2N7zlgMLN0MxEPR
+    P++1v6lqOnjPDTFUztFLcR/ge6wjS3ucLhAJFHBgU9s000bLEBCecA==
+    -----END RSA PRIVATE KEY-----
+type: Opaque

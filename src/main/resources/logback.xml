@@ -9,7 +9,12 @@
         </encoder>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="STDOUT" />
-    </root>
+     <logger name="io.micronaut" level="INFO">
+         <appender-ref ref="STDOUT"/>
+     </logger>
+
+    <logger name="org.example.uploader" additivity="false" level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
 </configuration>
