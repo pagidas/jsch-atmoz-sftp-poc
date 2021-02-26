@@ -4,12 +4,14 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import io.micronaut.context.annotation.Value;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Singleton
 public class UploaderService {
 
@@ -23,6 +25,7 @@ public class UploaderService {
 
     @SneakyThrows(SftpException.class)
     public void uploadContent(String content) {
+        log.info("Attempt to upload given content to sftp server");
         var inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         channelSftp.put(inputStream, String.format("%s/uploadedFile_%s.txt", uploadFolder, LocalDateTime.now()));
         channelSftp.exit();

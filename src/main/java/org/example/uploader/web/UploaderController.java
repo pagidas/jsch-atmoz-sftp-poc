@@ -22,7 +22,7 @@ public class UploaderController {
     HttpResponse<String> upload(@NotNull @Body String content) {
         try {
             uploaderService.uploadContent(content);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return HttpResponse.serverError("Uploading Failed! -- " + e.getMessage());
         }
         return HttpResponse.ok("File has been uploaded to atmoz sftp server! Take a look in upload/ at the root of repo");

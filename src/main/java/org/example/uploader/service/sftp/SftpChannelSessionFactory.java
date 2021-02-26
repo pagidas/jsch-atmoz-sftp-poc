@@ -4,6 +4,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.HostKey;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,9 +23,14 @@ public class SftpChannelSessionFactory {
         this.sftpConfig = sftpConfig;
     }
 
+    @Bean
+    public JschLogger jschLogger() {
+        return new JschLogger(log);
+    }
+
     @Singleton
-    public ChannelSftp jschSftpSession() {
-        JSch.setLogger(new JschLogger(log));
+    public ChannelSftp jschSftpSession(JschLogger jschLogger) {
+        JSch.setLogger(jschLogger);
 
         var decodedKey = Base64.getDecoder().decode(sftpConfig.getServer().getPublicKey());
 
