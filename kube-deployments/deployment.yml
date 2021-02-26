@@ -27,7 +27,7 @@ spec:
         - name: atmoz-sftp
           image: atmoz/sftp:latest
           imagePullPolicy: Always
-          args: ["foo:1001:::upload"] #create users and dirs
+          args: ["foo:pass:::upload"] #create users and dirs
           ports:
             - containerPort: 22
           volumeMounts:

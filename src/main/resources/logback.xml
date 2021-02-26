@@ -13,7 +13,11 @@
          <appender-ref ref="STDOUT"/>
      </logger>
 
-    <logger name="org.example.uploader" additivity="false" level="DEBUG">
+    <logger name="org.example.uploader" additivity="false" level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="org.example.uploader.service.sftp.SftpChannelSessionFactory" additivity="false" level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </logger>
 

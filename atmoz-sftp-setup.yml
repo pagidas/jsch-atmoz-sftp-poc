@@ -12,4 +12,4 @@ services:
       - ./keys/host/host_id_rsa:/etc/ssh/ssh_host_rsa_key
     ports:
       - "2222:22"
-    command: foo:1001
+    command: foo:pass:::upload

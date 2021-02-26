@@ -15,6 +15,7 @@ import java.util.Base64;
 @Factory
 public class SftpChannelSessionFactory {
 
+    private final String SFTP = "sftp";
     private final SftpConfiguration sftpConfig;
 
     public SftpChannelSessionFactory(SftpConfiguration sftpConfig) {
@@ -49,13 +50,24 @@ public class SftpChannelSessionFactory {
                     sftpConfig.getClient().getUser(),
                     sftpConfig.getServer().getHost(),
                     sftpConfig.getServer().getPort());
-            // it won't complain because we use public-private-key authentication
-            jschSession.setPassword("no-password-at-the-moment");
+            jschSession.setPassword(sftpConfig.getClient().getPassword());
+
+            /*
+            Notes on configuring the client.
+
+            - Can skip hostKeyAuthentication if we don't know the server's public key.
+            - Can choose our PreferredAuthentication methods order.
+
+            The order of PreferredAuthentication methods might be put from the server,
+            example, 2FA, or both public key and password. So we might not be able to pick up our order.
+             */
+//            jschSession.setConfig("StrictHostKeyChecking", "no");
+//            jschSession.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive");
 
             jschSession.connect();
             log.info("Session connected {}", jschSession.isConnected());
 
-            var sftpChannel = (ChannelSftp) jschSession.openChannel("sftp");
+            var sftpChannel = (ChannelSftp) jschSession.openChannel(SFTP);
             sftpChannel.connect();
             log.info("SFT channel created {}", sftpChannel.isConnected());
 

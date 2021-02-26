@@ -14,6 +14,7 @@ public class SftpConfiguration {
     @ConfigurationProperties("client")
     public static class ClientConfig {
         private String user;
+        private String password;
         private String publicKey;
         private String privateKey;
     }

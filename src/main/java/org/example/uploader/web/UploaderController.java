@@ -23,8 +23,8 @@ public class UploaderController {
         try {
             uploaderService.uploadContent(content);
         } catch (RuntimeException e) {
-            return HttpResponse.serverError("Uploaded Failed! -- " + e.getMessage());
+            return HttpResponse.serverError("Uploading Failed! -- " + e.getMessage());
         }
-        return HttpResponse.ok("File has been uploaded to atmoz sftp server!");
+        return HttpResponse.ok("File has been uploaded to atmoz sftp server! Take a look in upload/ at the root of repo");
     }
 }
