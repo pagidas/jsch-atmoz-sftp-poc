@@ -1,9 +1,9 @@
 package org.example.uploader.service.sftp;
 
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.HostKey;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import java.util.Base64;
 @Factory
 public class SftpChannelSessionFactory {
 
-    private final String SFTP = "sftp";
     private final SftpConfiguration sftpConfig;
 
     public SftpChannelSessionFactory(SftpConfiguration sftpConfig) {
@@ -29,7 +28,7 @@ public class SftpChannelSessionFactory {
     }
 
     @Singleton
-    public ChannelSftp jschSftpSession(JschLogger jschLogger) {
+    public Session jschSftpSession(JschLogger jschLogger) {
         JSch.setLogger(jschLogger);
 
         var decodedKey = Base64.getDecoder().decode(sftpConfig.getServer().getPublicKey());
@@ -73,11 +72,7 @@ public class SftpChannelSessionFactory {
             jschSession.connect();
             log.info("Session connected {}", jschSession.isConnected());
 
-            var sftpChannel = (ChannelSftp) jschSession.openChannel(SFTP);
-            sftpChannel.connect();
-            log.info("SFT channel created {}", sftpChannel.isConnected());
-
-            return sftpChannel;
+            return jschSession;
         } catch (JSchException e) {
             log.error("Jsch failed with message: {}", e.getMessage());
         }
